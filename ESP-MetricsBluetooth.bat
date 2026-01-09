@@ -8,7 +8,7 @@
 echo --------------------------------------------------
 echo Setting up ESP-IDF environment...
 set "IDF_TOOLS_PATH=C:\espressif"
-set "IDF_PATH=C:\espressif\frameworks\esp-idf-v5.5.2"
+set "IDF_PATH=C:\espressif\frameworks\esp-idf-v5.5.1"
 
 :: Find the offline Python executable, this searches the python_env folder for the correct executable instead of using the system's default Python.
 echo --------------------------------------------------
