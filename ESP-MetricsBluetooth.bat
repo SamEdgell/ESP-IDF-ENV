@@ -47,7 +47,7 @@ for /f "delims=" %%i in ('idf.py --version') do echo ESP-IDF version: %%i
 :: Navigate to the desired project directory, full clean and build the project.
 echo --------------------------------------------------
 echo Navigating to ESP project...
-cd /d "D:\esp_workspace\MetricsBluetooth"
+cd /d "D:\esp_workspace\MetricsESPBluetooth"
 ::idf.py fullclean
 ::idf.py build
 
