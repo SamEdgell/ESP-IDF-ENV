@@ -53,29 +53,82 @@ cd /d "C:\Workspaces\radio-remote-controls"
 :menu
 echo --------------------------------------------------
 echo Available commands:
-echo b - Build project (idf.py build)
-echo c - Clean project (idf.py clean)
-echo f - Full clean project (idf.py fullclean)
-echo m - Menu config (idf.py menuconfig)
-echo q - Quit
+echo b  - Build project
+echo c  - Clean project
+echo f  - Flash device
+echo fc - Full clean project
+echo m  - Monitor device
+echo mc - Menu config
+echo p  - Select port
+echo t  - Set target
+echo x  - Exit
+echo --------------------------------------------------
 set /p choice="Enter command: "
-if "%choice%"=="b" (
-    echo Running build...
-    idf.py build
-) else if "%choice%"=="c" (
-    echo Running clean...
-    idf.py clean
-) else if "%choice%"=="f" (
-    echo Running full clean...
-    idf.py fullclean
-) else if "%choice%"=="m" (
-    echo Running menuconfig...
-    idf.py menuconfig
-) else if "%choice%"=="q" (
-    goto :end
+
+if /i "%choice%"=="b" goto :build
+if /i "%choice%"=="c" goto :clean
+if /i "%choice%"=="f" goto :flash
+if /i "%choice%"=="fc" goto :fullclean
+if /i "%choice%"=="m" goto :monitor
+if /i "%choice%"=="mc" goto :menuconfig
+if /i "%choice%"=="p" goto :select_port
+if /i "%choice%"=="t" goto :set_target
+if /i "%choice%"=="x" goto :exit
+
+echo Invalid command.
+goto :menu
+
+:build
+echo Running build...
+idf.py build
+goto :menu
+
+:clean
+echo Running clean...
+idf.py clean
+goto :menu
+
+:flash
+if "%port%"=="" (
+    echo No port selected. Use 'p' to select a port first.
 ) else (
-    echo Invalid command.
+    echo Running flash on port %port%...
+    idf.py flash -p %port%
 )
+goto :menu
+
+:fullclean
+echo Running full clean...
+idf.py fullclean
+goto :menu
+
+:monitor
+if "%port%"=="" (
+    echo Running monitor, locating port automatically...
+    idf.py monitor
+) else (
+    echo Running monitor on port %port%...
+    idf.py monitor -p %port%
+)
+goto :menu
+
+:menuconfig
+echo Running menuconfig...
+idf.py menuconfig
+goto :menu
+
+:select_port
+echo Selecting port...
+set /p port_num="Enter port number only (e.g., COM3 = 3): "
+set port=COM%port_num%
+echo Port set to %port%
+goto :menu
+
+:set_target
+echo Setting target...
+set /p target="Enter target (e.g., esp32, esp32s2, esp32c3, esp32s3): "
+idf.py set-target %target%
+echo Target set to %target%
 goto :menu
 
 :end
