@@ -44,12 +44,40 @@ call export.bat
 echo --------------------------------------------------
 for /f "delims=" %%i in ('idf.py --version') do echo ESP-IDF version: %%i
 
-:: Navigate to the desired project directory, full clean and build the project.
+:: Navigate to the desired project directory.
 echo --------------------------------------------------
 echo Navigating to ESP project...
 cd /d "C:\Workspaces\radio-remote-controls"
-::idf.py fullclean
-::idf.py build
 
+:: Interactive menu for commands.
+:menu
+echo --------------------------------------------------
+echo Available commands:
+echo b - Build project (idf.py build)
+echo c - Clean project (idf.py clean)
+echo f - Full clean project (idf.py fullclean)
+echo m - Menu config (idf.py menuconfig)
+echo q - Quit
+set /p choice="Enter command: "
+if "%choice%"=="b" (
+    echo Running build...
+    idf.py build
+) else if "%choice%"=="c" (
+    echo Running clean...
+    idf.py clean
+) else if "%choice%"=="f" (
+    echo Running full clean...
+    idf.py fullclean
+) else if "%choice%"=="m" (
+    echo Running menuconfig...
+    idf.py menuconfig
+) else if "%choice%"=="q" (
+    goto :end
+) else (
+    echo Invalid command.
+)
+goto :menu
+
+:end
 :: Keep the command prompt open for further commands.
 cmd /k
