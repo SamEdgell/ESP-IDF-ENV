@@ -53,6 +53,7 @@ cd /d "D:\esp_workspace\MetricsESPBluetooth"
 :menu
 echo --------------------------------------------------
 echo Available commands:
+echo.
 echo b  - Build project
 echo c  - Clean project
 echo f  - Flash device
@@ -81,25 +82,37 @@ goto :menu
 :build
 echo Running build...
 idf.py build
+if errorlevel 1 (
+    echo Build failed.
+)
 goto :menu
 
 :clean
 echo Running clean...
 idf.py clean
+if errorlevel 1 (
+    echo Clean failed.
+)
 goto :menu
 
 :flash
 if "%port%"=="" (
     echo No port selected. Use 'p' to select a port first.
-) else (
-    echo Running flash on port %port%...
-    idf.py flash -p %port%
+    goto :menu
+)
+echo Running flash on port %port%...
+python -m esptool --port %port% --chip esp32s3 --baud 921600 --before default_reset --after hard_reset write_flash --flash_mode dio --flash_freq 40m --flash_size detect 0x0 .\build\bootloader\bootloader.bin 0x8000 .\build\partition_table\partition-table.bin 0x10000 .\build\MetricsBluetooth.bin
+if errorlevel 1 (
+    echo Flash failed.
 )
 goto :menu
 
 :fullclean
 echo Running full clean...
 idf.py fullclean
+if errorlevel 1 (
+    echo Full clean failed.
+)
 goto :menu
 
 :monitor
@@ -110,18 +123,29 @@ if "%port%"=="" (
     echo Running monitor on port %port%...
     idf.py monitor -p %port%
 )
+if errorlevel 1 (
+    echo Monitor failed.
+)
 goto :menu
 
 :menuconfig
 echo Running menuconfig...
 idf.py menuconfig
+if errorlevel 1 (
+    echo Menuconfig failed.
+)
 goto :menu
 
 :select_port
-echo Selecting port...
+echo Available COM ports:
+powershell -command "Get-WmiObject Win32_PnPEntity | Where-Object { $_.Name -match 'COM\d+' } | ForEach-Object { $_.Name }"
+echo.
 set /p port_num="Enter port number only (e.g., COM3 = 3): "
 set port=COM%port_num%
 echo Port set to %port%
+if errorlevel 1 (
+    echo Port selection failed.
+)
 goto :menu
 
 :set_target
@@ -129,6 +153,9 @@ echo Setting target...
 set /p target="Enter target (e.g., esp32, esp32s2, esp32c3, esp32s3): "
 idf.py set-target %target%
 echo Target set to %target%
+if errorlevel 1 (
+    echo Set target failed.
+)
 goto :menu
 
 :end
