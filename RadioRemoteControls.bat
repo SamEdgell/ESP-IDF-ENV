@@ -51,10 +51,11 @@ cd /d "C:\Workspaces\radio-remote-controls"
 
 :: Interactive menu for commands.
 :menu
+echo.
+echo --------------------------------------------------
+echo                Available commands:
 echo --------------------------------------------------
 echo.
-echo Available commands:
-echo -------------------
 echo b  - Build project
 echo c  - Clean project
 echo f  - Flash device
@@ -67,6 +68,8 @@ echo x  - Exit (Additional commands can be run after exit)
 echo.
 echo --------------------------------------------------
 set /p choice="Enter command: "
+echo --------------------------------------------------
+echo.
 
 if /i "%choice%"=="b" goto :build
 if /i "%choice%"=="c" goto :clean
