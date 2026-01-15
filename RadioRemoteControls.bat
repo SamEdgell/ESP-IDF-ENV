@@ -54,6 +54,7 @@ cd /d "C:\Workspaces\radio-remote-controls"
 echo --------------------------------------------------
 echo.
 echo Available commands:
+echo -------------------
 echo b  - Build project
 echo c  - Clean project
 echo f  - Flash device
@@ -62,7 +63,8 @@ echo m  - Monitor device
 echo mc - Menu config
 echo p  - Select port
 echo t  - Set target
-echo x  - Exit
+echo x  - Exit (Additional commands can be run after exit)
+echo.
 echo --------------------------------------------------
 set /p choice="Enter command: "
 
@@ -166,6 +168,6 @@ if errorlevel 1 (
 )
 goto :menu
 
-:end
+:exit
 :: Keep the command prompt open for further commands.
 cmd /k
