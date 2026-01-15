@@ -141,6 +141,10 @@ echo Available COM ports:
 powershell -command "Get-WmiObject Win32_PnPEntity | Where-Object { $_.Name -match 'COM\d+' } | ForEach-Object { $_.Name }"
 echo.
 set /p port_num="Enter port number only (e.g., COM3 = 3): "
+if "%port_num%"=="" (
+    echo No port entered.
+    goto :menu
+)
 set port=COM%port_num%
 echo Port set to %port%
 if errorlevel 1 (
@@ -151,6 +155,10 @@ goto :menu
 :set_target
 echo Setting target...
 set /p target="Enter target (e.g., esp32, esp32s2, esp32c3, esp32s3): "
+if "%target%"=="" (
+    echo No target entered.
+    goto :menu
+)
 idf.py set-target %target%
 echo Target set to %target%
 if errorlevel 1 (
