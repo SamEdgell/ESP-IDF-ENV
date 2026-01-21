@@ -9,6 +9,8 @@ echo --------------------------------------------------
 echo Setting up ESP-IDF environment...
 set "IDF_TOOLS_PATH=C:\espressif"
 set "IDF_PATH=C:\espressif\frameworks\esp-idf-v5.5.1"
+echo IDF_TOOLS_PATH = %IDF_TOOLS_PATH%
+echo IDF_PATH = %IDF_PATH%
 
 :: Find the offline Python executable, this searches the python_env folder for the correct executable instead of using the system's default Python.
 echo --------------------------------------------------
@@ -17,21 +19,20 @@ for /f "delims=" %%i in ('dir /s /b "%IDF_TOOLS_PATH%\python_env\python.exe"') d
     set "PYTHON=%%i"
     goto :found_python
 )
-
 :found_python
 if "%PYTHON%"=="" (
-    echo [ERROR] Could not find the offline Python executable in %IDF_TOOLS_PATH%\python_env
+    echo Could not find the offline Python executable in %IDF_TOOLS_PATH%\python_env
     exit /b 1
 ) else (
-    echo [SUCCESS] Python offline executable: %PYTHON%
+    echo PYTHON = %PYTHON%
 )
 
-:: Locate and add the Pythons tool directory to the system path to satisfy export.bat.
+:: Add the Python tool directory to the PATH to satisfy export.bat.
 echo --------------------------------------------------
-echo Setting up Python tools path...
+echo Prepending Python directory to PATH...
 for /d %%d in ("%IDF_TOOLS_PATH%\tools\idf-python\*") do (
     set "PATH=%%d;%PATH%"
-    echo [SUCCESS] Python tools path: %%d
+    echo PATH = %%d
 )
 
 :: Run the export script, use 'call' so that the script stays open for further commands.
@@ -150,11 +151,8 @@ if "%port_num%"=="" (
     echo No port entered.
     goto :menu
 )
-set port=COM%port_num%
+set "port=COM%port_num%"
 echo Port set to %port%
-if errorlevel 1 (
-    echo Port selection failed.
-)
 goto :menu
 
 :set_target
@@ -165,9 +163,10 @@ if "%target%"=="" (
     goto :menu
 )
 idf.py set-target %target%
-echo Target set to %target%
 if errorlevel 1 (
     echo Set target failed.
+) else (
+    echo Target set to %target%
 )
 goto :menu
 

@@ -9,6 +9,8 @@ echo --------------------------------------------------
 echo Setting up ESP-IDF environment...
 set "IDF_TOOLS_PATH=C:\espressif"
 set "IDF_PATH=C:\espressif\frameworks\esp-idf-v5.5.1"
+echo IDF_TOOLS_PATH = %IDF_TOOLS_PATH%
+echo IDF_PATH = %IDF_PATH%
 
 :: Find the offline Python executable, this searches the python_env folder for the correct executable instead of using the system's default Python.
 echo --------------------------------------------------
@@ -17,21 +19,20 @@ for /f "delims=" %%i in ('dir /s /b "%IDF_TOOLS_PATH%\python_env\python.exe"') d
     set "PYTHON=%%i"
     goto :found_python
 )
-
 :found_python
 if "%PYTHON%"=="" (
-    echo [ERROR] Could not find the offline Python executable in %IDF_TOOLS_PATH%\python_env
+    echo Could not find the offline Python executable in %IDF_TOOLS_PATH%\python_env
     exit /b 1
 ) else (
-    echo [SUCCESS] Python offline executable: %PYTHON%
+    echo PYTHON = %PYTHON%
 )
 
-:: Locate and add the Pythons tool directory to the system path to satisfy export.bat.
+:: Add the Python tool directory to the PATH to satisfy export.bat.
 echo --------------------------------------------------
-echo Setting up Python tools path...
+echo Prepending Python directory to PATH...
 for /d %%d in ("%IDF_TOOLS_PATH%\tools\idf-python\*") do (
     set "PATH=%%d;%PATH%"
-    echo [SUCCESS] Python tools path: %%d
+    echo PATH = %%d
 )
 
 :: Run the export script, use 'call' so that the script stays open for further commands.
@@ -106,7 +107,8 @@ if "%port%"=="" (
     goto :menu
 )
 echo Running flash on port %port%...
-python -m esptool --port %port% --chip esp32s3 --baud 921600 --before default_reset --after hard_reset write_flash --flash_mode dio --flash_freq 40m --flash_size detect 0x0 .\build\bootloader\bootloader.bin 0x8000 .\build\partition_table\partition-table.bin 0x10000 .\build\MetricsBluetooth.bin
+:: Purposely selecting esp32s3 here as this is the target device for this project.
+"%PYTHON%" -m esptool --port %port% --chip esp32s3 --baud 921600 --before default_reset --after hard_reset write_flash --flash_mode dio --flash_freq 40m --flash_size detect 0x0 .\build\bootloader\bootloader.bin 0x8000 .\build\partition_table\partition-table.bin 0x10000 .\build\MetricsBluetooth.bin
 if errorlevel 1 (
     echo Flash failed.
 )
@@ -150,25 +152,12 @@ if "%port_num%"=="" (
     echo No port entered.
     goto :menu
 )
-set port=COM%port_num%
+set "port=COM%port_num%"
 echo Port set to %port%
-if errorlevel 1 (
-    echo Port selection failed.
-)
 goto :menu
 
 :set_target
-echo Setting target...
-set /p target="Enter target (e.g., esp32, esp32s2, esp32c3, esp32s3): "
-if "%target%"=="" (
-    echo No target entered.
-    goto :menu
-)
-idf.py set-target %target%
-echo Target set to %target%
-if errorlevel 1 (
-    echo Set target failed.
-)
+echo Target setting not supported for this project.
 goto :menu
 
 :exit
