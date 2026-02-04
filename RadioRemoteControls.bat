@@ -57,6 +57,7 @@ echo --------------------------------------------------
 echo                Available commands:
 echo --------------------------------------------------
 echo.
+echo a  - Build/Flash/Monitor all in sequence
 echo b  - Build project
 echo c  - Clean project
 echo f  - Flash device
@@ -72,6 +73,7 @@ set /p choice="Enter command: "
 echo --------------------------------------------------
 echo.
 
+if /i "%choice%"=="a" goto :all
 if /i "%choice%"=="b" goto :build
 if /i "%choice%"=="c" goto :clean
 if /i "%choice%"=="f" goto :flash
@@ -83,6 +85,18 @@ if /i "%choice%"=="t" goto :set_target
 if /i "%choice%"=="x" goto :exit
 
 echo Invalid command.
+goto :menu
+
+:all
+if "%port%"=="" (
+    echo No port selected. Use 'p' to select a port first.
+    goto :menu
+)
+echo Running build, flash and monitor on port %port%...
+idf.py build flash -p %port% monitor
+if errorlevel 1 (
+    echo Build/Flash/Monitor failed.
+)
 goto :menu
 
 :build
